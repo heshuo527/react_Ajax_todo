@@ -6,7 +6,7 @@ import Ajax from './service/ajax';
 
 interface DataType {
   content: string;
-  id: number;
+  id: string;
   time: number;
   done: boolean;
 }
@@ -67,11 +67,28 @@ function App() {
     return yarn + '-' + month + '-' + data + ' ' + hours + ':' + minute + ':' + second
   }
 
-  const todoInit = () => {
-    Ajax('GET', 'http://localhost:3005/todo/all', null, (todo: { data: any; }) => {
-      const todoList = todo.data
-      setTodoList(todoList)
-    })
+  const todoInit = async () => {
+    // Ajax<{
+    //   content: string;
+    //   done: boolean
+    //   id: string;
+    //   time: number;
+    // }[]>('GET', 'http://localhost:3005/todo/all', null).then(res => {
+    //   if (res.ret === 0) {
+    //     setTodoList(res.data)
+    //   }
+    // })
+
+    const res = await Ajax<{
+      content: string;
+      done: boolean
+      id: string;
+      time: number;
+    }[]>('GET', 'http://localhost:3005/todo/all', null);
+    if (res.ret === 0) {
+      console.log(res.data);
+      setTodoList(res.data)
+    }
   }
 
   useEffect(() => {
@@ -85,34 +102,34 @@ function App() {
       message.error('请输入内容')
       return
     } else {
-      Ajax('POST', `http://localhost:3005/todo/update/${id}`, {
-        task: content,
-      }, () => {
-        todoInit()
-        message.success('添加成功')
-      })
+      // Ajax('POST', `http://localhost:3005/todo/update/${id}`, {
+      //   task: content,
+      // }, () => {
+      //   todoInit()
+      //   message.success('添加成功')
+      // })
     }
   }
 
-  const deleteTodo = (Id: number) => {
-    Ajax('GET', `http://localhost:3005/todo/delete/${Id}`, null, () => {
-      const newTodo = [...todoList]
-      const todos = newTodo.filter(todo => todo.id !== Id)
-      setTodoList(todos)
-      message.error('删除成功')
-    })
+  const deleteTodo = (id: string) => {
+    // Ajax('GET', `http://localhost:3005/todo/delete/${Id}`, null, () => {
+    //   const newTodo = [...todoList]
+    //   const todos = newTodo.filter(todo => todo.id !== Id)
+    //   setTodoList(todos)
+    //   message.error('删除成功')
+    // })
   }
 
   const doneTodo = (todo: DataType) => {
-    Ajax('POST', `http://localhost:3005/todo/update/${todo.id}`, {
-      task: todo.content,
-      done: !todo.done,
-    }, () => {
-      todoInit()
-      if (todo.done === true) {
-        message.warn('已完成')
-      }
-    })
+    // Ajax('POST', `http://localhost:3005/todo/update/${todo.id}`, {
+    //   task: todo.content,
+    //   done: !todo.done,
+    // }, () => {
+    //   todoInit()
+    //   if (todo.done === true) {
+    //     message.warn('已完成')
+    //   }
+    // })
   }
 
   return (
