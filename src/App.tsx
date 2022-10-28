@@ -86,7 +86,6 @@ function App() {
       time: number;
     }[]>('GET', 'http://localhost:3005/todo/all', null);
     if (res.ret === 0) {
-      console.log(res.data);
       setTodoList(res.data)
     }
   }
@@ -94,6 +93,7 @@ function App() {
   useEffect(() => {
     todoInit()
   }, [])
+
 
   const add = () => {
     const id = new Date().getTime()
@@ -108,16 +108,36 @@ function App() {
       //   todoInit()
       //   message.success('添加成功')
       // })
+      Ajax('POST', `http://localhost:3005/todo/update/${id}`, {
+        task: content
+      }).then(() => {
+        todoInit()
+        message.success('添加成功')
+      })
     }
   }
 
   const deleteTodo = (id: string) => {
+
     // Ajax('GET', `http://localhost:3005/todo/delete/${Id}`, null, () => {
     //   const newTodo = [...todoList]
     //   const todos = newTodo.filter(todo => todo.id !== Id)
     //   setTodoList(todos)
     //   message.error('删除成功')
     // })
+
+    /* Ajax('GET', `http://localhost:3005/todo/delete/${id}`, null).then(() => {
+      const newTodo = [...todoList]
+      const todos = newTodo.filter(todo => todo.id !== id)
+      setTodoList(todos)
+      message.error('删除成功')
+    }) */
+
+    Ajax('GET', `http://localhost:3005/todo/delete/${id}`, null)
+    const newTodo = [...todoList]
+    const todos = newTodo.filter(todo => todo.id !== id)
+    setTodoList(todos)
+    message.error('删除成功')
   }
 
   const doneTodo = (todo: DataType) => {
@@ -130,6 +150,17 @@ function App() {
     //     message.warn('已完成')
     //   }
     // })
+
+    Ajax('POST', `http://localhost:3005/todo/update/${todo.id}`, {
+      task: todo.content,
+      done: !todo.done
+    }).then(() => {
+      // 如果为状态 true 就提示已完成, 为 false 就不提示
+      if (todo.done === true) {
+        message.warn('已完成')
+      }
+      todoInit()
+    })
   }
 
   return (

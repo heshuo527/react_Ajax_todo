@@ -17,7 +17,6 @@ const Ajax = <T>(method: string, url: string, data: any) => {
                         response = JSON.parse(response)
                     } catch (error) {
                         console.error(error);
-                        
                     }
                     resolve(response as unknown as Response<T>)
                 } else {
